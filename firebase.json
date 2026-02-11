@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "site": "w07-release",
+    "source": ".",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "frameworksBackend": {
+      "region": "asia-northeast3"
+    }
+  }
+}
