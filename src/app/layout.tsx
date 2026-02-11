@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
 
 const inter = Inter({
@@ -28,12 +29,20 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased bg-gray-900 text-white`}>
         <nav className="border-b border-gray-800 px-6 py-4">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
-            <a href="/" className="text-xl font-bold text-white">
+            <Link href="/" className="text-xl font-bold text-white">
               자소서<span className="text-indigo-500">AI</span>
-            </a>
-            <span className="text-xs text-gray-500 border border-gray-700 rounded-full px-3 py-1">
-              Beta
-            </span>
+            </Link>
+            <div className="flex items-center gap-4">
+              <Link 
+                href="/pricing" 
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                요금제
+              </Link>
+              <span className="text-xs text-gray-500 border border-gray-700 rounded-full px-3 py-1">
+                Beta
+              </span>
+            </div>
           </div>
         </nav>
         <main>{children}</main>
