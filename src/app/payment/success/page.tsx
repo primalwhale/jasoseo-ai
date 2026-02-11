@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("");
 
@@ -37,13 +36,12 @@ export default function PaymentSuccessPage() {
 
         if (data.success) {
           setStatus("success");
-          // 결제 완료 상태 저장
           sessionStorage.setItem("payment_completed", "true");
         } else {
           setStatus("error");
           setMessage(data.error || "결제 승인에 실패했습니다.");
         }
-      } catch (error) {
+      } catch {
         setStatus("error");
         setMessage("결제 처리 중 오류가 발생했습니다.");
       }
@@ -101,5 +99,17 @@ export default function PaymentSuccessPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full"></div>
+      </div>
+    }>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }

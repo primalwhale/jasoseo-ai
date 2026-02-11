@@ -1,26 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Script from "next/script";
 
 declare global {
   interface Window {
-    TossPayments: any;
+    TossPayments: (clientKey: string) => {
+      requestPayment: (method: string, options: {
+        amount: number;
+        orderId: string;
+        orderName: string;
+        customerName?: string;
+        successUrl: string;
+        failUrl: string;
+      }) => Promise<void>;
+    };
   }
 }
 
-export default function PricingPage() {
+function PricingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [clientKey, setClientKey] = useState("");
   
-  // URL에서 결과가 있는지 확인
   const hasResult = searchParams.get("from") === "result";
 
   useEffect(() => {
-    // 클라이언트 키 가져오기
     fetch("/api/payment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -61,10 +68,9 @@ export default function PricingPage() {
         successUrl: `${window.location.origin}/payment/success`,
         failUrl: `${window.location.origin}/payment/fail`,
       });
-    } catch (error: any) {
-      if (error.code === "USER_CANCEL") {
-        // 사용자가 취소한 경우
-      } else {
+    } catch (error: unknown) {
+      const tossError = error as { code?: string };
+      if (tossError.code !== "USER_CANCEL") {
         alert("결제 중 오류가 발생했습니다.");
       }
     } finally {
@@ -161,5 +167,17 @@ export default function PricingPage() {
         </section>
       </div>
     </>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full"></div>
+      </div>
+    }>
+      <PricingContent />
+    </Suspense>
   );
 }
